@@ -6,6 +6,8 @@ using namespace std;
 
 int check_winner(string board[3][3]);
 void P_VS_P();
+void P_VS_Computer();
+
 
 int main() {
     int row, col;
@@ -187,3 +189,95 @@ void P_VS_P(){
     cout<<"Do you want to Play again?.\n yes/no"<<endl;
     cin>>playagain;
 }
+void P_VS_Computer(){
+
+	int row, col;
+    string arr[3][3];
+
+    // initialize board
+    for (int i = 0; i < 3; i++)
+        for (int j = 0; j < 3; j++)
+            arr[i][j] = " _ ";
+
+    cout << "=================\n";
+    cout << "Welcome to the Tic Tac Toe Game:\n";
+    cout << "=================\n";
+
+    // show board
+
+    cout << "Hey,human !\n =====Lets see How well can you play!!!=====" << endl;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++)
+            cout << arr[i][j];
+        cout << endl;
+    }
+
+    // PLAYER X
+
+    while(true){ 
+        cout << "Enter row and column (0-2): ";
+        cin >> row >> col;
+
+        // validate input
+        while (row < 0 || row > 2 || col < 0 || col > 2 || arr[row][col] != " _ ") {
+            cout << "Invalid or occupied position. Try again: ";
+            cin >> row ;
+            row=err_handling_int(row);
+            cin >> col;
+            col=err_handling_int(col);
+        }
+
+        arr[row][col] = " X ";
+
+        // print updated board
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++)
+                cout << arr[i][j];
+            cout << endl;
+        }
+        int check=check_winner(arr);
+        if(check==1){
+        	cout<<"Human!!! you have won ahhhh!"<<endl;
+        	break;
+        }
+
+        // PLAYER O
+        cout << "Computers turn.yay!!!! "<<endl;
+		srand(time(0));
+		do{	
+			row=rand() % 3;
+			col=rand() % 3;
+		}while (arr[row][col] != " _ ");
+
+        arr[row][col] = " O ";
+        check=check_winner(arr);
+
+        // print updated board
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++)
+                cout << arr[i][j];
+            cout << endl;
+        }
+        if(check==1){
+        	cout<<"Computers are here to win!"<<endl;
+        	break;
+        }
+    }
+    cout<<"Do you want to Play again?.\n yes/no"<<endl;
+    cin>>playagain;
+}
+
+int err_handling_int(int check){
+	while(true){
+		if(cin.fail()){
+			cin.clear();
+			cin.ignore(1000,'\n');
+			cout<<"Invalid input.Re-enter :"<<endl;
+			cin>>check;
+		}
+		else{
+			return check;
+		}
+	}
+}
+
