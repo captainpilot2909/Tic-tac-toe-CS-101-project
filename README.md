@@ -1,15 +1,20 @@
-# Tic-tac-toe-CS-101-project
-
 #include <iostream>
+#include <fstream>
 #include <string>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
+string playagain="yes";
 
-int check_winner(string board[3][3]);
 void P_VS_P();
 void P_VS_Computer();
+int check_winner(string board[3][3]);
+int countMoves(string board[3][3], int i = 0, int j = 0); // recursive draw checker
+int err_handling_int(int check);
+bool player_checker(string name);
 
 int main() {
-	int choice;
+    int choice;
     string name;
     fstream playerfile;
 
@@ -24,18 +29,16 @@ int main() {
     }
     playerfile.close();
 
-	cout<<"============Enter the Gamemode you want to play:============"<<endl;
-	cout<<"1.Player VS Player:"<<endl;
-	cout<<"2.Player VS computer:"<<endl;
-	cin>>choice;
-	err_handling_int(choice);
-
     do{
+        cout<<"============Enter the Gamemode you want to play:============"<<endl;
+        cout<<"1.Player VS Player:"<<endl;
+        cout<<"2.Player VS computer:"<<endl;
+        cin>>choice;
+        err_handling_int(choice);
         switch(choice){
             case 1:
                 P_VS_P();
                 break;
-
             case 2:
                 P_VS_Computer();
                 break;
@@ -48,186 +51,202 @@ int main() {
     return 0;
 }
 
-
 int check_winner(string board[3][3]){
     for(int i=0;i<3;i++){
-    	if(board[i][0]==board[i][1] &&
-		   board[i][1]==board[i][2] &&
-		   board[i][0]!=" _ ")
-			return 1;    
+        if(board[i][0]==board[i][1] &&
+           board[i][1]==board[i][2] &&
+           board[i][0]!=" _ ")
+            return 1;    
     }
 
     for(int j=0;j<3;j++){
-    	if(board[0][j]==board[1][j] &&
-		   board[1][j]==board[2][j] &&
-		   board[0][j]!=" _ ")
-			return 1;  
+        if(board[0][j]==board[1][j] &&
+           board[1][j]==board[2][j] &&
+           board[0][j]!=" _ ")
+            return 1;  
     }  
-	
-	if(board[0][0]==board[1][1]&&
-	   board[1][1]==board[2][2]&&
-       board[0][0]!=" _ ") 
-	   	return 1;
-	
-	if(board[0][2]==board[1][1]&&
-	   board[1][1]==board[2][0]&&
-       board[0][2]!=" _ ") 
-	   	return 1;
-	else{
-		return 0;
-	}
-}
     
+    if(board[0][0]==board[1][1]&&
+       board[1][1]==board[2][2]&&
+       board[0][0]!=" _ ") 
+        return 1;
+    
+    if(board[0][2]==board[1][1]&&
+       board[1][1]==board[2][0]&&
+       board[0][2]!=" _ ") 
+        return 1;
+    
+    return 0;
+}
+
+// Recursive draw checker
+int countMoves(string board[3][3], int i, int j){
+    if(i==3) return 0;
+    int count = (board[i][j] != " _ ");
+    if(j==2) return count + countMoves(board, i+1, 0);
+    else return count + countMoves(board, i, j+1);
+}
+
 void P_VS_P(){
-	    int row, col;
+    int row, col;
     string arr[3][3];
 
-    // initialize board
     for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
             arr[i][j] = " _ ";
 
-    cout << "=================\n";
-    cout << "Welcome to the Tic Tac Toe Game:\n";
-    cout << "=================\n";
-
-    // show board
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++)
-            cout << arr[i][j];
-        cout << endl;
-    }
-
-    // PLAYER X
     cout << "Player X begins first" << endl;
     while(true){ 
-        cout << "Enter row and column (0-2): ";
+        cout << "Enter row and column (0-2): "<<endl;
+        cout<<"Row: ";
         cin >> row ;
         row=err_handling_int(row);
-        cin >> col;
-        col=err_handling_int(col);
-
-        // validate input
-        while (row < 0 || row > 2 || col < 0 || col > 2 || arr[row][col] != " _ ") {
-            cout << "Invalid or occupied position. Try again: ";
-            cin >> row >> col;
-        }
-
-        arr[row][col] = " X ";
-
-        // print updated board
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++)
-                cout << arr[i][j];
-            cout << endl;
-        }
-        int check=check_winner(arr);
-        if(check==1){
-        	cout<<"Player X wins!"<<endl;
-        	break;
-        }
-
-        // PLAYER O
-        cout << "Player O turn. Enter row and column (0-2): ";
-        cin >> row;
-        row=err_handling_int(row);
+        cout<<"Column: ";
         cin >> col;
         col=err_handling_int(col);
 
         while (row < 0 || row > 2 || col < 0 || col > 2 || arr[row][col] != " _ ") {
-            cout << "Invalid or occupied position. Try again: ";
-            cin >> row >> col;
-        }
-
-        arr[row][col] = " O ";
-        check=check_winner(arr);
-
-        // print updated board
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++)
-                cout << arr[i][j];
-            cout << endl;
-        }
-        if(check==1){
-        	cout<<"Player O wins!"<<endl;
-        	break;
-        }
-    }
-    cout<<"Do you want to Play again?.\n yes/no"<<endl;
-    cin>>playagain;
-}
-void P_VS_Computer(){
-
-	int row, col;
-    string arr[3][3];
-
-    // initialize board
-    for (int i = 0; i < 3; i++)
-        for (int j = 0; j < 3; j++)
-            arr[i][j] = " _ ";
-
-    cout << "=================\n";
-    cout << "Welcome to the Tic Tac Toe Game:\n";
-    cout << "=================\n";
-
-    // show board
-
-    cout << "Hey,human !\n =====Lets see How well can you play!!!=====" << endl;
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++)
-            cout << arr[i][j];
-        cout << endl;
-    }
-
-    // PLAYER X
-
-    while(true){ 
-        cout << "Enter row and column (0-2): ";
-        cin >> row >> col;
-
-        // validate input
-        while (row < 0 || row > 2 || col < 0 || col > 2 || arr[row][col] != " _ ") {
-            cout << "Invalid or occupied position. Try again: ";
+            cout << "Invalid or occupied position "<<endl;
+            cout<<"Row: ";
             cin >> row ;
             row=err_handling_int(row);
+            cout<<"Column: ";
             cin >> col;
             col=err_handling_int(col);
         }
 
         arr[row][col] = " X ";
+        cout<<endl;
 
-        // print updated board
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++)
                 cout << arr[i][j];
             cout << endl;
         }
-        int check=check_winner(arr);
-        if(check==1){
-        	cout<<"Human!!! you have won ahhhh!"<<endl;
-        	break;
+
+        if(check_winner(arr)){
+            cout<<"Player X wins!"<<endl;
+            break;
+        }
+        if(countMoves(arr)==9){
+            cout<<"Game Draw!"<<endl;
+            break;
+        }
+
+        // PLAYER O
+        cout << "Player O turn. Enter row and column (0-2): "<<endl;
+        cout<<"Row: ";
+        cin >> row;
+        row=err_handling_int(row);
+        cout<<"Column: ";
+        cin >> col;
+        col=err_handling_int(col);
+
+        while (row < 0 || row > 2 || col < 0 || col > 2 || arr[row][col] != " _ ") {
+            cout << "Invalid or occupied position "<<endl;
+            cout<<"Row: ";
+            cin >> row ;
+            row=err_handling_int(row);
+            cout<<"Column: ";
+            cin >> col;
+            col=err_handling_int(col);
+        }
+
+        arr[row][col] = " O ";
+		cout<<endl;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++)
+                cout << arr[i][j];
+            cout << endl;
+        }
+        if(check_winner(arr)){
+            cout<<"Player O wins!"<<endl;
+            break;
+        }
+        if(countMoves(arr)==9){
+            cout<<"Game Draw!"<<endl;
+            break;
+        }
+    }
+    cout<<"Do you want to Play again?.\n yes/no"<<endl;
+    cin>>playagain;
+}
+
+void P_VS_Computer(){
+    int row, col;
+    string arr[3][3];
+
+    for (int i = 0; i < 3; i++)
+        for (int j = 0; j < 3; j++)
+            arr[i][j] = " _ ";
+
+    cout << "Hey,human !\n =====Lets see How well can you play!!!=====" << endl;
+    
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++){
+            cout << arr[i][j];
+        }
+        cout << endl;
+    }
+
+    srand(time(0));
+
+    while(true){ 
+        cout << "Enter row and column (0-2): ";
+        cout<<"Row: ";
+        cin >> row ;
+        row=err_handling_int(row);
+        cout<<"Column: ";
+        cin >> col;
+        col=err_handling_int(col);
+
+        while (row < 0 || row > 2 || col < 0 || col > 2 || arr[row][col] != " _ ") {
+            cout << "Invalid or occupied position "<<endl;
+            cout<<"Row: ";
+            cin >> row ;
+            row=err_handling_int(row);
+            cout<<"Column: ";
+            cin >> col;
+            col=err_handling_int(col);
+        }
+
+        arr[row][col] = " X ";
+        cout<<endl;
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++)
+                cout << arr[i][j];
+            cout << endl;
+        }
+        if(check_winner(arr)){
+            cout<<"Human!!! you have won ahhhh!"<<endl;
+            break;
+        }
+        if(countMoves(arr)==9){
+            cout<<"Game Draw!"<<endl;
+            break;
         }
 
         // PLAYER O
         cout << "Computers turn.yay!!!! "<<endl;
-		srand(time(0));
-		do{	
-			row=rand() % 3;
-			col=rand() % 3;
-		}while (arr[row][col] != " _ ");
+        do{    
+            row=rand() % 3;
+            col=rand() % 3;
+        }while (arr[row][col] != " _ ");
 
         arr[row][col] = " O ";
-        check=check_winner(arr);
-
-        // print updated board
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++)
                 cout << arr[i][j];
             cout << endl;
         }
-        if(check==1){
-        	cout<<"Computers are here to win!"<<endl;
-        	break;
+        if(check_winner(arr)){
+            cout<<"Computers are here to win!"<<endl;
+            break;
+        }
+        if(countMoves(arr)==9){
+            cout<<"Game Draw!"<<endl;
+            break;
         }
     }
     cout<<"Do you want to Play again?.\n yes/no"<<endl;
@@ -235,16 +254,29 @@ void P_VS_Computer(){
 }
 
 int err_handling_int(int check){
-	while(true){
-		if(cin.fail()){
-			cin.clear();
-			cin.ignore(1000,'\n');
-			cout<<"Invalid input.Re-enter :"<<endl;
-			cin>>check;
-		}
-		else{
-			return check;
-		}
-	}
+    while(true){
+        if(cin.fail()){
+            cin.clear();
+            cin.ignore(1000,'\n');
+            cout<<"Invalid input.Re-enter :"<<endl;
+            cin>>check;
+        }
+        else{
+            return check;
+        }
+    }
 }
 
+bool player_checker(string name){
+    fstream file_checker;
+    file_checker.open("Players_name.txt",ios::in);
+    string line;
+    while(getline(file_checker,line)){
+        if(name==line){
+            cout<<"Welcome Back "<<name<<"!"<<endl;
+            file_checker.close();
+            return true;
+        }
+    }
+    return false;
+}
